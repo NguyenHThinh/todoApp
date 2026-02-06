@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { Todo, Group } from '@/types/todo';
-import { v4 as uuidv4 } from 'uuid';
 
 interface TodoState {
     todos: Todo[];
@@ -63,7 +62,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
 
     addTodo: (text, groupId) => {
         const newTodo: Todo = {
-            id: uuidv4(),
+            id: crypto.randomUUID(),
             text,
             completed: false,
             groupId,
@@ -77,7 +76,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
     },
 
     addTodoWithNewGroup: (text, groupName) => {
-        const newGroupId = uuidv4();
+        const newGroupId = crypto.randomUUID();
         const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
         const newGroup: Group = {
             id: newGroupId,
@@ -85,7 +84,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
             color: randomColor,
         };
         const newTodo: Todo = {
-            id: uuidv4(),
+            id: crypto.randomUUID(),
             text,
             completed: false,
             groupId: newGroupId,
@@ -120,7 +119,7 @@ export const useTodoStore = create<TodoState>((set, get) => ({
         }),
 
     addGroup: (name, color) => {
-        const id = uuidv4();
+        const id = crypto.randomUUID();
         const finalColor = color || `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
         set((state) => {
             const newGroups = [...state.groups, { id, name, color: finalColor }];

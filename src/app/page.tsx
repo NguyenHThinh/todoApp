@@ -6,7 +6,7 @@ import { AddTask } from '@/components/todo/AddTask';
 export default function Home() {
   return (
     <AppLayout>
-      <div className="space-y-6 max-w-2xl mx-auto py-0 md:mx-0 md:py-6">
+      <div className="space-y-6 max-w-2xl mx-auto py-0 md:py-6">
         <div className="space-y-1 mb-4 md:mb-8">
           <h1 className="md:block hidden text-4xl font-extrabold tracking-tight lg:text-5xl">Tasks</h1>
           <p className="md:block hidden text-lg text-muted-foreground">Stay organized and focused on your goals.</p>

@@ -5,70 +5,60 @@
       "text": "Đem cây phơi nắng",
       "completed": false,
       "groupId": "default",
-      "createdAt": 1770377344480
     },
     {
       "id": "ce35980a-f8e2-41d9-9ab2-31f6070525d7",
       "text": "Tập thể dục 30'",
       "completed": false,
       "groupId": "default",
-      "createdAt": 1770377353301
     },
     {
       "id": "c595a80e-bab8-444c-b69c-c15706188c9a",
       "text": "Dành 15' để xem lại các việc cần làm",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377400150
+      "groupId": "default"
     },
     {
       "id": "d6725004-bac2-4cfe-a33e-0c1164f9fe24",
       "text": "Học/ nghe tiếng anh 30'",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377411674
+      "groupId": "default"
     },
     {
       "id": "dc2ea6e1-87ad-413b-94e3-def3b227d487",
       "text": "Học Nest và tìm hiểu về BE 30'",
       "completed": false,
-      "groupId": "b0d05892-547b-43e3-b76a-03c2d745dc8b",
-      "createdAt": 1770377464711
+      "groupId": "b0d05892-547b-43e3-b76a-03c2d745dc8b"
     },
     {
       "id": "762153a4-2312-487c-b2f7-20eea01e0bb7",
       "text": "Dành 15' để nghĩ ý tưởng cho 1 project",
       "completed": false,
-      "groupId": "b0d05892-547b-43e3-b76a-03c2d745dc8b",
-      "createdAt": 1770377491009
+      "groupId": "b0d05892-547b-43e3-b76a-03c2d745dc8b"
     },
     {
       "id": "4a004ad7-6fd8-4c0f-94b4-5da18e3298f3",
       "text": "Uống ít nhất 2 ca nước",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377516015
+      "groupId": "default"
     },
     {
       "id": "1233bca7-d6f4-4d59-8066-9d1bf0e0c1ff",
       "text": "Dậy trước 7h / ngủ trước 12h",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377535624
+      "groupId": "default"
     },
     {
       "id": "40d50a69-2d42-47b8-8dda-30eb0718b047",
       "text": "Dành 15' để tĩnh tâm suy nghĩ",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377576896
+      "groupId": "default"
     },
     {
       "id": "8f9ce93f-6a54-4970-bebf-247e4e5f702a",
       "text": "15' khi dậy không lướt mxh",
       "completed": false,
-      "groupId": "default",
-      "createdAt": 1770377587549
+      "groupId": "default"
     }
   ],
   "groups": [
