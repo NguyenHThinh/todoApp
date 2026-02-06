@@ -6,6 +6,7 @@ interface TodoState {
     todos: Todo[];
     groups: Group[];
     selectedGroupId: string | null;
+    lastResetDate: string;
     isLoading: boolean;
     error: string | null;
 
@@ -18,18 +19,31 @@ interface TodoState {
     addGroup: (name: string, color?: string) => string;
     deleteGroup: (id: string) => void;
     selectGroup: (id: string | null) => void;
+    resetDailyTodos: () => void;
 
     // Removed fetchData as we load directly
 }
 
+// Helper function to check if a new day has started
+const isNewDay = (lastResetDate: string | undefined): boolean => {
+    if (!lastResetDate) return true;
+    const today = new Date().toISOString().split('T')[0];
+    return today !== lastResetDate;
+};
+
+// Helper function to get today's date string
+const getTodayDateString = (): string => {
+    return new Date().toISOString().split('T')[0];
+};
+
 // Helper function to save data to JSON file
-const saveToFile = async (state: { todos: Todo[]; groups: Group[]; selectedGroupId: string | null }) => {
+const saveToFile = async (state: { todos: Todo[]; groups: Group[]; selectedGroupId: string | null }, resetDate?: string) => {
     try {
         const dataToSave = {
             todos: state.todos,
             groups: state.groups,
             selectedGroupId: state.selectedGroupId,
-            lastResetDate: initialData.lastResetDate || new Date().toISOString().split('T')[0]
+            lastResetDate: resetDate || initialData.lastResetDate || getTodayDateString()
         };
         
         await fetch('/api/save-tasks', {
@@ -44,13 +58,27 @@ const saveToFile = async (state: { todos: Todo[]; groups: Group[]; selectedGroup
     }
 };
 
-export const useTodoStore = create<TodoState>((set) => ({
-    // Initialize directly from the JSON file
-    todos: initialData.todos as Todo[],
-    groups: initialData.groups as Group[],
-    selectedGroupId: initialData.selectedGroupId, // or default to 'default'
-    isLoading: false,
-    error: null,
+export const useTodoStore = create<TodoState>((set, get) => {
+    // Check if we need to reset todos for a new day
+    let initialTodos = initialData.todos as Todo[];
+    let lastResetDate = initialData.lastResetDate;
+    
+    if (isNewDay(lastResetDate)) {
+        // Reset all todos to completed: false
+        initialTodos = initialTodos.map(todo => ({ ...todo, completed: false }));
+        lastResetDate = getTodayDateString();
+        initialData.todos = initialTodos;
+        initialData.lastResetDate = lastResetDate;
+    }
+
+    return {
+        // Initialize directly from the JSON file
+        todos: initialTodos,
+        groups: initialData.groups as Group[],
+        selectedGroupId: initialData.selectedGroupId, // or default to 'default'
+        lastResetDate: lastResetDate || getTodayDateString(),
+        isLoading: false,
+        error: null,
 
     addTodo: (text, groupId) => {
         const newTodo: Todo = {
@@ -173,4 +201,20 @@ export const useTodoStore = create<TodoState>((set) => ({
             saveToFile(newState);
             return newState;
         }),
-}));
+
+    resetDailyTodos: () => {
+        const today = getTodayDateString();
+        set((state) => {
+            const resetTodos = state.todos.map(todo => ({ ...todo, completed: false }));
+            const newState = { ...state, todos: resetTodos, lastResetDate: today };
+            
+            // Update initialData
+            initialData.todos = resetTodos.map(todo => ({ ...todo, completed: false }));
+            initialData.lastResetDate = today;
+            
+            saveToFile(newState, today);
+            return newState;
+        });
+    },
+    };
+});
