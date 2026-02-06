@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { Todo, Group } from '@/types/todo';
+import initialData from '@/data/tasks.json';
 
 interface TodoState {
     todos: Todo[];
@@ -9,7 +10,6 @@ interface TodoState {
     error: string | null;
 
     // Actions
-    fetchData: () => Promise<void>;
     addTodo: (text: string, groupId: string) => void;
     addTodoWithNewGroup: (text: string, groupName: string) => void;
     toggleTodo: (id: string) => void;
@@ -18,47 +18,17 @@ interface TodoState {
     addGroup: (name: string, color?: string) => string;
     deleteGroup: (id: string) => void;
     selectGroup: (id: string | null) => void;
+
+    // Removed fetchData as we load directly
 }
 
-// Helper to debounce or throttle saves could be added here, 
-// but for simplicity we'll save on every change for now.
-const saveStateToApi = async (todos: Todo[], groups: Group[], selectedGroupId: string | null) => {
-    try {
-        await fetch('/api/tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ todos, groups, selectedGroupId }),
-        });
-    } catch (error) {
-        console.error('Failed to save state:', error);
-    }
-};
-
-export const useTodoStore = create<TodoState>((set, get) => ({
-    todos: [],
-    groups: [
-        { id: 'default', name: 'Daily', color: 'hsl(var(--primary))' },
-    ],
-    selectedGroupId: 'default',
+export const useTodoStore = create<TodoState>((set) => ({
+    // Initialize directly from the JSON file
+    todos: initialData.todos as Todo[],
+    groups: initialData.groups as Group[],
+    selectedGroupId: initialData.selectedGroupId, // or default to 'default'
     isLoading: false,
     error: null,
-
-    fetchData: async () => {
-        set({ isLoading: true, error: null });
-        try {
-            const res = await fetch('/api/tasks');
-            if (!res.ok) throw new Error('Failed to fetch data');
-            const data = await res.json();
-            set({
-                todos: data.todos || [],
-                groups: data.groups || [],
-                selectedGroupId: data.selectedGroupId || 'default',
-                isLoading: false
-            });
-        } catch (error) {
-            set({ error: (error as Error).message, isLoading: false });
-        }
-    },
 
     addTodo: (text, groupId) => {
         const newTodo: Todo = {
@@ -66,13 +36,8 @@ export const useTodoStore = create<TodoState>((set, get) => ({
             text,
             completed: false,
             groupId,
-            createdAt: Date.now(),
         };
-        set((state) => {
-            const newState = { todos: [...state.todos, newTodo] };
-            saveStateToApi(newState.todos, state.groups, state.selectedGroupId);
-            return newState;
-        });
+        set((state) => ({ todos: [...state.todos, newTodo] }));
     },
 
     addTodoWithNewGroup: (text, groupName) => {
@@ -88,44 +53,33 @@ export const useTodoStore = create<TodoState>((set, get) => ({
             text,
             completed: false,
             groupId: newGroupId,
-            createdAt: Date.now(),
         };
 
-        set((state) => {
-            const newState = {
-                groups: [...state.groups, newGroup],
-                todos: [...state.todos, newTodo],
-                selectedGroupId: newGroupId
-            };
-            saveStateToApi(newState.todos, newState.groups, newState.selectedGroupId);
-            return newState;
-        });
+        set((state) => ({
+            groups: [...state.groups, newGroup],
+            todos: [...state.todos, newTodo],
+            selectedGroupId: newGroupId
+        }));
     },
 
     toggleTodo: (id) =>
-        set((state) => {
-            const newTodos = state.todos.map((t) =>
+        set((state) => ({
+            todos: state.todos.map((t) =>
                 t.id === id ? { ...t, completed: !t.completed } : t
-            );
-            saveStateToApi(newTodos, state.groups, state.selectedGroupId);
-            return { todos: newTodos };
-        }),
+            )
+        })),
 
     deleteTodo: (id) =>
-        set((state) => {
-            const newTodos = state.todos.filter((t) => t.id !== id);
-            saveStateToApi(newTodos, state.groups, state.selectedGroupId);
-            return { todos: newTodos };
-        }),
+        set((state) => ({
+            todos: state.todos.filter((t) => t.id !== id)
+        })),
 
     addGroup: (name, color) => {
         const id = crypto.randomUUID();
         const finalColor = color || `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
-        set((state) => {
-            const newGroups = [...state.groups, { id, name, color: finalColor }];
-            saveStateToApi(state.todos, newGroups, state.selectedGroupId);
-            return { groups: newGroups };
-        });
+        set((state) => ({
+            groups: [...state.groups, { id, name, color: finalColor }]
+        }));
         return id;
     },
 
@@ -135,8 +89,6 @@ export const useTodoStore = create<TodoState>((set, get) => ({
             const newTodos = state.todos.filter((t) => t.groupId !== id);
             const newSelectedId = state.selectedGroupId === id ? 'default' : state.selectedGroupId;
 
-            saveStateToApi(newTodos, newGroups, newSelectedId);
-
             return {
                 groups: newGroups,
                 todos: newTodos,
@@ -144,8 +96,5 @@ export const useTodoStore = create<TodoState>((set, get) => ({
             };
         }),
 
-    selectGroup: (id) => set((state) => {
-        saveStateToApi(state.todos, state.groups, id);
-        return { selectedGroupId: id };
-    }),
+    selectGroup: (id) => set({ selectedGroupId: id }),
 }));

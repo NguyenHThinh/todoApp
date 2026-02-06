@@ -8,11 +8,7 @@ import { Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export function TaskList() {
-    const { todos, toggleTodo, deleteTodo, groups, deleteGroup, fetchData } = useTodoStore()
-
-    React.useEffect(() => {
-        fetchData();
-    }, [fetchData]);
+    const { todos, toggleTodo, deleteTodo, groups, deleteGroup } = useTodoStore()
 
     // Group tasks by groupId
     const groupedTasks = React.useMemo(() => {
@@ -95,9 +91,6 @@ export function TaskList() {
                                         >
                                             {todo.text}
                                         </label>
-                                        <div className="mt-1 text-xs text-muted-foreground/50">
-                                            {new Date(todo.createdAt).toLocaleDateString()}
-                                        </div>
                                     </div>
 
                                     <Button

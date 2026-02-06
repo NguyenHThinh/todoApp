@@ -10,5 +10,4 @@ export interface Todo {
   text: string;
   completed: boolean;
   groupId: string; // references Group.id
-  createdAt: number;
 }
