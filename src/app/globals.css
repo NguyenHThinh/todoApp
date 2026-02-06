@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,14 +119,16 @@
 
 /* Ocean Theme */
 .theme-ocean {
-  --primary: oklch(0.5 0.2 240); /* Blue */
+  --primary: oklch(0.5 0.2 240);
+  /* Blue */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.9 0.05 240);
   --accent: oklch(0.92 0.05 240);
   --sidebar-primary: oklch(0.5 0.2 240);
 }
+
 .dark.theme-ocean {
-  --primary: oklch(0.6 0.2 240); 
+  --primary: oklch(0.6 0.2 240);
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.2 0.05 240);
   --accent: oklch(0.25 0.05 240);
@@ -134,12 +136,14 @@
 
 /* Sunset Theme */
 .theme-sunset {
-  --primary: oklch(0.6 0.2 30); /* Orange/Red */
+  --primary: oklch(0.6 0.2 30);
+  /* Orange/Red */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.05 40);
   --accent: oklch(0.95 0.05 40);
   --sidebar-primary: oklch(0.6 0.2 30);
 }
+
 .dark.theme-sunset {
   --primary: oklch(0.65 0.2 30);
   --secondary: oklch(0.25 0.05 30);
@@ -148,12 +152,14 @@
 
 /* Forest Theme */
 .theme-forest {
-  --primary: oklch(0.5 0.15 140); /* Green */
+  --primary: oklch(0.5 0.15 140);
+  /* Green */
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.05 140);
   --accent: oklch(0.95 0.05 140);
   --sidebar-primary: oklch(0.5 0.15 140);
 }
+
 .dark.theme-forest {
   --primary: oklch(0.6 0.15 140);
   --secondary: oklch(0.2 0.05 140);
@@ -165,6 +171,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
