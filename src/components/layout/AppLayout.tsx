@@ -30,8 +30,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         // Check immediately
         checkDailyReset()
 
-        // Set up interval to check every minute
-        const interval = setInterval(checkDailyReset, 600000)
+        // Set up interval to check every hour
+        const interval = setInterval(checkDailyReset, 3600000)
 
         // Calculate milliseconds until midnight
         const now = new Date()
