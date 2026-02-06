@@ -22,6 +22,28 @@ interface TodoState {
     // Removed fetchData as we load directly
 }
 
+// Helper function to save data to JSON file
+const saveToFile = async (state: { todos: Todo[]; groups: Group[]; selectedGroupId: string | null }) => {
+    try {
+        const dataToSave = {
+            todos: state.todos,
+            groups: state.groups,
+            selectedGroupId: state.selectedGroupId,
+            lastResetDate: initialData.lastResetDate || new Date().toISOString().split('T')[0]
+        };
+        
+        await fetch('/api/save-tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dataToSave),
+        });
+    } catch (error) {
+        console.error('Error saving to file:', error);
+    }
+};
+
 export const useTodoStore = create<TodoState>((set) => ({
     // Initialize directly from the JSON file
     todos: initialData.todos as Todo[],
@@ -37,7 +59,12 @@ export const useTodoStore = create<TodoState>((set) => ({
             completed: false,
             groupId,
         };
-        set((state) => ({ todos: [...state.todos, newTodo] }));
+        set((state) => {
+            const newState = { ...state, todos: [...state.todos, newTodo] };
+            initialData.todos.push(newTodo);
+            saveToFile(newState);
+            return newState;
+        });
     },
 
     addTodoWithNewGroup: (text, groupName) => {
@@ -55,31 +82,65 @@ export const useTodoStore = create<TodoState>((set) => ({
             groupId: newGroupId,
         };
 
-        set((state) => ({
-            groups: [...state.groups, newGroup],
-            todos: [...state.todos, newTodo],
-            selectedGroupId: newGroupId
-        }));
+        set((state) => {
+            const newState = {
+                ...state,
+                groups: [...state.groups, newGroup],
+                todos: [...state.todos, newTodo],
+                selectedGroupId: newGroupId
+            };
+            initialData.todos.push(newTodo);
+            initialData.groups.push(newGroup);
+            initialData.selectedGroupId = newGroupId;
+            saveToFile(newState);
+            return newState;
+        });
     },
 
     toggleTodo: (id) =>
-        set((state) => ({
-            todos: state.todos.map((t) =>
+        set((state) => {
+            const newTodos = state.todos.map((t) =>
                 t.id === id ? { ...t, completed: !t.completed } : t
-            )
-        })),
+            );
+            const newState = { ...state, todos: newTodos };
+            
+            // Update initialData
+            const todoIndex = initialData.todos.findIndex((t) => t.id === id);
+            if (todoIndex !== -1) {
+                initialData.todos[todoIndex].completed = !initialData.todos[todoIndex].completed;
+            }
+            
+            saveToFile(newState);
+            return newState;
+        }),
 
-    deleteTodo: (id) =>
-        set((state) => ({
-            todos: state.todos.filter((t) => t.id !== id)
-        })),
+    deleteTodo: (id) => {
+        set((state) => {
+            const newTodos = state.todos.filter((t) => t.id !== id);
+            const newState = { ...state, todos: newTodos };
+            
+            // Update initialData
+            initialData.todos = initialData.todos.filter((t) => t.id !== id);
+            
+            saveToFile(newState);
+            return newState;
+        });
+    },
 
     addGroup: (name, color) => {
         const id = crypto.randomUUID();
         const finalColor = color || `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`;
-        set((state) => ({
-            groups: [...state.groups, { id, name, color: finalColor }]
-        }));
+        const newGroup: Group = { id, name, color: finalColor };
+        
+        set((state) => {
+            const newState = {
+                ...state,
+                groups: [...state.groups, newGroup]
+            };
+            initialData.groups.push(newGroup);
+            saveToFile(newState);
+            return newState;
+        });
         return id;
     },
 
@@ -89,12 +150,27 @@ export const useTodoStore = create<TodoState>((set) => ({
             const newTodos = state.todos.filter((t) => t.groupId !== id);
             const newSelectedId = state.selectedGroupId === id ? 'default' : state.selectedGroupId;
 
-            return {
+            const newState = {
+                ...state,
                 groups: newGroups,
                 todos: newTodos,
                 selectedGroupId: newSelectedId
             };
+            
+            // Update initialData
+            initialData.groups = initialData.groups.filter((g) => g.id !== id);
+            initialData.todos = initialData.todos.filter((t) => t.groupId !== id);
+            initialData.selectedGroupId = newSelectedId || 'default';
+            
+            saveToFile(newState);
+            return newState;
         }),
 
-    selectGroup: (id) => set({ selectedGroupId: id }),
+    selectGroup: (id) => 
+        set((state) => {
+            const newState = { ...state, selectedGroupId: id };
+            initialData.selectedGroupId = id || 'default';
+            saveToFile(newState);
+            return newState;
+        }),
 }));

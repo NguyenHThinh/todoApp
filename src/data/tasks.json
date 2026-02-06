@@ -3,7 +3,7 @@
     {
       "id": "322c9a04-c4ea-4f92-bb8d-68f2f7b3180e",
       "text": "Đem cây phơi nắng",
-      "completed": false,
+      "completed": true,
       "groupId": "default"
     },
     {
@@ -59,6 +59,12 @@
       "text": "15' khi dậy không lướt mxh",
       "completed": false,
       "groupId": "default"
+    },
+    {
+      "id": "14ec4c94-d729-48a3-beec-4120bffdb934",
+      "text": "làm việc 30'",
+      "completed": false,
+      "groupId": "b0d05892-547b-43e3-b76a-03c2d745dc8b"
     }
   ],
   "groups": [

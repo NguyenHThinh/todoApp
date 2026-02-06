@@ -1,11 +1,10 @@
-export interface Group {
+export type Group = {
   id: string;
   name: string;
-  icon?: string;
-  color?: string; // Store a CSS variable name or hex
+  color: string; // Store a CSS variable name or hex
 }
 
-export interface Todo {
+export type Todo = {
   id: string;
   text: string;
   completed: boolean;
